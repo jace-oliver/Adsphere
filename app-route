@@ -1,0 +1,44 @@
+import { NextResponse } from "next/server";
+
+// In-memory sample data so it works without any database:
+type IslandId = "entertainment" | "product" | "clothing";
+type Ad = { id: string; title: string; creator: string; url: string; island: IslandId; lat: number; lon: number };
+
+const SAMPLE: Ad[] = [
+  { id: "e1", title: "Neon City — Short Film", creator: "Nova Films", url: "https://example.com/watch/neon", island: "entertainment", lat: 20, lon: -30 },
+  { id: "e2", title: "HoverKart (Game)", creator: "Orbit Labs", url: "https://example.com/play/hoverkart", island: "entertainment", lat: 15, lon: 40 },
+  { id: "p1", title: "Pocket Projector", creator: "LumaGo", url: "https://example.com/shop/projector", island: "product", lat: -25, lon: -80 },
+  { id: "c1", title: "Retro Sneakers", creator: "VoltKicks", url: "https://example.com/shop/sneakers", island: "clothing", lat: 35, lon: 120 },
+];
+
+function randomBetween(a:number,b:number){ return a + Math.random()*(b-a); }
+
+function boundsFor(island: IslandId) {
+  if (island === "entertainment") return { latMin: -5, latMax: 35, lonMin: -40, lonMax: 60 };
+  if (island === "product") return { latMin: -40, latMax: -5, lonMin: -140, lonMax: -60 };
+  return { latMin: 5, latMax: 45, lonMin: 100, lonMax: 170 }; // clothing
+}
+
+export async function GET() {
+  return NextResponse.json({ items: SAMPLE, source: "mock" }, { status: 200 });
+}
+
+export async function POST(req: Request) {
+  const body = await req.json();
+  const { title, creator, url, island } = body ?? {};
+  if (!title || !creator || !url || !island) {
+    return NextResponse.json({ error: "Missing fields" }, { status: 400 });
+  }
+  const b = boundsFor(island);
+  const ad: Ad = {
+    id: Math.random().toString(36).slice(2),
+    title,
+    creator,
+    url,
+    island,
+    lat: randomBetween(b.latMin, b.latMax),
+    lon: randomBetween(b.lonMin, b.lonMax)
+  };
+  SAMPLE.push(ad);
+  return NextResponse.json(ad, { status: 201 });
+}
