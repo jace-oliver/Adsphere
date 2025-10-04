@@ -1,0 +1,13 @@
+# Interactive Marketing Sphere (Next.js)
+
+Glossy 3D sphere with three islands:
+- **Entertainment Nation** (movies, short films, games)
+- **Product Peninsula** (gadgets and products)
+- **Clothing Continent** (apparel)
+
+Click a marker to open a **left-side pop-up** with a link to the product/site.
+
+## Quick start (locally)
+```bash
+npm install
+npm run dev
